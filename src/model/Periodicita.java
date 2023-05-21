@@ -1,4 +1,4 @@
-package Esercizio;
+package model;
 
 public enum Periodicita {
 SETTIMANALE,

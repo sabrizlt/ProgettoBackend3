@@ -1,20 +1,52 @@
 
-package Esercizio;
+package model;
 
+import java.time.LocalDate;
 import java.util.List;
-import javax.persistence.Query;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import java.util.Scanner;
+import dao.CatalogoDAO;
+import model.Utente;
+import dao.UtenteDAO;
+
+
+
 
 public class MainProject {
-	static EntityManagerFactory emf = Persistence.createEntityManagerFactory("Esercizio15b");
+	static EntityManagerFactory emf = Persistence.createEntityManagerFactory("ProgettoBackend3");
 	static EntityManager em = emf.createEntityManager();
 
 	public static void main(String[] args) {
+	    EntityManagerFactory emf = Persistence.createEntityManagerFactory("ProgettoBackend3");
+	    EntityManager em = emf.createEntityManager();
+	    CatalogoDAO catalogoDAO = new CatalogoDAO(em);
+	    UtenteDAO utenteDAO = new UtenteDAO();
+	    
+	    
+	    Utente utente1 = new Utente();
+        utente1.setNome("mario");
+        utente1.setCognome("rossi");
+        utente1.setDatanascita(LocalDate.of(1990, 5, 15));
+        utenteDAO.aggiungiUtente(utente1);
 
-		pulisciDatabase();
+        Utente utente2 = new Utente();
+        utente2.setNome("marco");
+        utente2.setCognome("viola");
+        utente2.setDatanascita(LocalDate.of(1995, 6, 12));
+        utenteDAO.aggiungiUtente(utente2);
+
+        Utente utente3 = new Utente();
+        utente3.setNome("giuseppe");
+        utente3.setCognome("verd");
+        utente3.setDatanascita(LocalDate.of(1999, 3, 10));
+        utenteDAO.aggiungiUtente(utente3);
+        
+        Prestito prestito1 = new Prestito(utente1, a);
+
+
+	    catalogoDAO.pulisciDatabase();
 
 		Libri a = new Libri();
 		a.setTitolo("ciao belli");
@@ -101,21 +133,20 @@ public class MainProject {
 
 		aggiungiCatalogo9(ee);	
 		
-		Scanner scanner = new Scanner(System.in);
-		System.out.print("Inserisci il titolo da cercare: ");
-		String titolo = scanner.nextLine();
+		 Scanner scanner = new Scanner(System.in);
+		    System.out.print("Inserisci il titolo da cercare: ");
+		    String titolo = scanner.nextLine();
 
-		cercaPerTitolo(titolo);
+		    List<Catalogo> risultatiPerTitolo = catalogoDAO.cercaPerTitolo(titolo);
+		    System.out.println("Risultati per titolo: " + risultatiPerTitolo);
+
+		    int anno = 1996;
+		    List<Catalogo> risultatiPerAnno = catalogoDAO.cercaPerAnno(anno);
+		    System.out.println("Risultati per anno: " + risultatiPerAnno);
+
+		    em.close();
+		    emf.close();
 		
-		cercaPerAnno(2020);
-	}
-	
-	private static void pulisciDatabase() {
-		em.getTransaction().begin();
-		Query query = em.createQuery("DELETE FROM Catalogo");
-		query.executeUpdate();
-		em.getTransaction().commit();
-		System.out.println("Database pulito");
 	}
 	 
 
@@ -182,46 +213,6 @@ public class MainProject {
 	    em.getTransaction().commit();
 	    System.out.println("Elemento aggiunto nel Database");
 	}
-	
-	
-	
-	
-	
-	
-	private static void cercaPerTitolo(String titolo) {
-		em.getTransaction().begin();
-		Query query = em.createNamedQuery("cercaPerTitolo");
-		query.setParameter("Hanger", "%" + titolo + "%");
-		List<Libri> risultati = query.getResultList();
-		em.getTransaction().commit();
-
-		if (!risultati.isEmpty()) {
-			System.out.println("Risultati della ricerca:");
-			for (Libri libro : risultati) {
-				System.out.println(libro.toString());
-			}
-		} else {
-			System.out.println("Nessun risultato trovato per il titolo specificato.");
-		}
-	}
-	
-	private static void cercaPerAnno(Integer i) {
-	    em.getTransaction().begin();
-	    Query query = em.createNamedQuery("cercaPerAnno");
-	    query.setParameter("annopubblicazione", i);
-	    List<Libri> risultati = query.getResultList();
-	    em.getTransaction().commit();
-
-	    if (!risultati.isEmpty()) {
-	        System.out.println("Risultati della ricerca:");
-	        for (Libri libro : risultati) {
-	            System.out.println(libro.toString());
-	        }
-	    } else {
-	        System.out.println("Nessun risultato trovato per l'anno di pubblicazione specificato.");
-	    }
-	}
-
 
 
 } 
